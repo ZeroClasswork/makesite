@@ -4,11 +4,13 @@ import (
     "fmt"
     "io/ioutil"
     "strings"
+    "html/template"
+    "os"
 )
 
 type Post struct {
     Title       string
-    Content     string
+    Contents     string
 }
 
 func main() {
@@ -23,11 +25,28 @@ func main() {
     }
     for line := range contentLines {
         if line != 0 && contentLines[line] != "\n" {
-            newPost.Content += contentLines[line]
+            newPost.Contents += contentLines[line]
         }
     }
     fmt.Println("Title")
     fmt.Println(newPost.Title)
     fmt.Println("Content")
-    fmt.Println(newPost.Content)
+    fmt.Println(newPost.Contents)
+    fmt.Println("\n\nRead in contents of first-post.txt\n\n")
+
+    tmpl := template.Must(template.New("template.tmpl").ParseFiles("template.tmpl"))
+    err = tmpl.Execute(os.Stdout, newPost)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println("\n\nPrinted first-post.txt with Go Templates\n\n")
+    newFile, err := os.Create("first-post.html")
+    if err != nil {
+        panic(err)
+    }
+    err = tmpl.Execute(newFile, newPost)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println("\n\nWrote HTML template to first-post.html\n\n")
 }

@@ -11,7 +11,7 @@ import (
 
 type Post struct {
 	Title    string
-	Contents string
+	Contents template.HTML
 }
 
 func main() {
@@ -34,7 +34,7 @@ func save(fileName string) {
 	}
 	for line := range contentLines {
 		if line != 0 && contentLines[line] != "" {
-			newPost.Contents += contentLines[line] + "\n"
+			newPost.Contents += template.HTML("<p>" + contentLines[line] + "</p>")
 		}
 	}
 

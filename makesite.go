@@ -33,8 +33,8 @@ func save(fileName string) {
 		newPost.Title = contentLines[0]
 	}
 	for line := range contentLines {
-		if line != 0 && contentLines[line] != "\n" {
-			newPost.Contents += contentLines[line]
+		if line != 0 && contentLines[line] != "" {
+			newPost.Contents += contentLines[line] + "\n"
 		}
 	}
 

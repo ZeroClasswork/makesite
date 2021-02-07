@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
-	// "fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -27,23 +27,7 @@ func main() {
 		save(fileName)
 	}
 	if dirName != "" {
-		files, err := ioutil.ReadDir(dirName)
-		if err != nil {
-			log.Fatal(err)
-		}
-		for _, file := range files {
-			if file.Name()[len(file.Name())-4:] == ".txt" {
-				// fileContents, err := ioutil.ReadFile(file.Name())
-				// if err != nil {
-				// 	log.Fatal(err)
-				// }
-				// contentLines := strings.Split(string(fileContents), "\n")
-				// for line := range contentLines {
-				// 	fmt.Println(contentLines[line])
-				// }
-				save(file.Name())
-			}
-		}
+		saveDir(dirName)
 	}
 }
 
@@ -71,5 +55,30 @@ func save(fileName string) {
 	err = tmpl.Execute(newFile, newPost)
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func saveDir(dirName string) {
+	files, err := ioutil.ReadDir(dirName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, file := range files {
+		if file.Name()[len(file.Name())-4:] == ".txt" {
+			save(file.Name())
+		}
+		if file.IsDir() {
+			err = filepath.Walk(file.Name(), func(path string, info os.FileInfo, err error) error {
+				if err == nil && len(info.Name()) > 4 && info.Name()[len(info.Name())-4:] == ".txt" {
+					save(path)
+				} else {
+					return err
+				}
+				return nil
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
 	}
 }

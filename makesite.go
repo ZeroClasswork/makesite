@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -15,6 +16,10 @@ type Post struct {
 	Contents template.HTML
 }
 
+var Green = "\033[32m"
+var Bold = "\033[1m"
+var Reset = "\033[0m"
+
 func main() {
 	var fileName string
 	var dirName string
@@ -27,7 +32,9 @@ func main() {
 		save(fileName)
 	}
 	if dirName != "" {
-		saveDir(dirName)
+		numSaved := saveDir(dirName)
+		fmt.Printf("%s%sSuccess!%s Generated %s%d%s page(s).\n",
+			Green, Bold, Reset, Bold, numSaved, Reset)
 	}
 }
 
@@ -58,7 +65,8 @@ func save(fileName string) {
 	}
 }
 
-func saveDir(dirName string) {
+func saveDir(dirName string) int {
+	numSaved := 0
 	files, err := ioutil.ReadDir(dirName)
 	if err != nil {
 		log.Fatal(err)
@@ -66,11 +74,13 @@ func saveDir(dirName string) {
 	for _, file := range files {
 		if file.Name()[len(file.Name())-4:] == ".txt" {
 			save(file.Name())
+			numSaved += 1
 		}
 		if file.IsDir() {
 			err = filepath.Walk(file.Name(), func(path string, info os.FileInfo, err error) error {
 				if err == nil && len(info.Name()) > 4 && info.Name()[len(info.Name())-4:] == ".txt" {
 					save(path)
+					numSaved += 1
 				} else {
 					return err
 				}
@@ -81,4 +91,5 @@ func saveDir(dirName string) {
 			}
 		}
 	}
+	return numSaved
 }

@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/atleastzero/makesite/cmd"
+import "makesite/cmd"
 
 func main() {
 	cmd.Execute()

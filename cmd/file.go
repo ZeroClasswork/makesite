@@ -25,6 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Post is a struct that holds information to be added into an html file
 type Post struct {
 	Title    string
 	Contents template.HTML

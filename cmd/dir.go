@@ -24,9 +24,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Green = "\033[32m"
-var Bold = "\033[1m"
-var Reset = "\033[0m"
+var Green = "\033[32m" // Allows Green terminal output
+var Bold = "\033[1m"   // Allows Bold terminal output
+var Reset = "\033[0m"  // Allows a return to normal terminal output
 
 // dirCmd represents the dir command
 var dirCmd = &cobra.Command{

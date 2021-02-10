@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+// Package cmd holds the commands for the makesite CLI
 package cmd
 
 import (
@@ -24,9 +26,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Green = "\033[32m" // Allows Green terminal output
-var Bold = "\033[1m"   // Allows Bold terminal output
-var Reset = "\033[0m"  // Allows a return to normal terminal output
+// Allows Green terminal output
+var Green = "\033[32m"
+
+// Allows Bold terminal output
+var Bold = "\033[1m"
+
+// Allows a return to normal terminal output
+var Reset = "\033[0m"
 
 // dirCmd represents the dir command
 var dirCmd = &cobra.Command{

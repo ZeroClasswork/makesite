@@ -16,9 +16,9 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"html/template"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 
@@ -41,7 +41,15 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		save(args)
+		for argNum := range args {
+			arg := args[argNum]
+			outputFile, err := save(arg)
+			if err != nil {
+				fmt.Printf("Error transforming %s to .html file!\n", arg)
+			} else {
+				fmt.Printf("Successfully created %s based on %s\n", outputFile, arg)
+			}
+		}
 	},
 }
 
@@ -59,32 +67,31 @@ func init() {
 	// fileCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func save(fileNames []string) {
-	for fileNum := range fileNames {
-		fileName := fileNames[fileNum]
-		postContents, err := ioutil.ReadFile(fileName)
-		if err != nil {
-			log.Fatal(err)
-		}
-		newPost := new(Post)
-		contentLines := strings.Split(string(postContents), "\n")
-		if len(contentLines) > 0 {
-			newPost.Title = contentLines[0]
-		}
-		for line := range contentLines {
-			if line != 0 && contentLines[line] != "\n" {
-				newPost.Contents += template.HTML("<p>" + contentLines[line] + "</p>\n")
-			}
-		}
-
-		tmpl := template.Must(template.New("template.tmpl").ParseFiles("template.tmpl"))
-		newFile, err := os.Create(fileName[0:len(fileName)-4] + ".html")
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = tmpl.Execute(newFile, newPost)
-		if err != nil {
-			log.Fatal(err)
+func save(fileName string) (outputFileName string, err error) {
+	postContents, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		return "", err
+	}
+	newPost := new(Post)
+	contentLines := strings.Split(string(postContents), "\n")
+	if len(contentLines) > 0 {
+		newPost.Title = contentLines[0]
+	}
+	for line := range contentLines {
+		if line != 0 && contentLines[line] != "\n" {
+			newPost.Contents += template.HTML("<p>" + contentLines[line] + "</p>\n")
 		}
 	}
+
+	tmpl := template.Must(template.New("template.tmpl").ParseFiles("template.tmpl"))
+	newFileName := fileName[0:len(fileName)-4] + ".html"
+	newFile, err := os.Create(newFileName)
+	if err != nil {
+		return "", err
+	}
+	err = tmpl.Execute(newFile, newPost)
+	if err != nil {
+		return "", err
+	}
+	return newFileName, nil
 }

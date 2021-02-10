@@ -26,13 +26,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Allows Green terminal output
+// Green allows Green terminal output
 var Green = "\033[32m"
 
-// Allows Bold terminal output
+// Bold allows Bold terminal output
 var Bold = "\033[1m"
 
-// Allows a return to normal terminal output
+// Reset allows a return to normal terminal output
 var Reset = "\033[0m"
 
 // dirCmd represents the dir command

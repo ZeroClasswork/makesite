@@ -32,17 +32,47 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "makesite",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "makesite transforms your txt files into html files",
+	Long: `makesite transforms your txt files into html files
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	The makesite file <filename>.txt command will create a <filename>.html file
+	The makesite dir <dirname> command will create these files for each .txt
+		file in the directory
+	The makesite command is equivalent to makesite .`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Hello CLI")
+		if len(args) == 0 {
+			fmt.Printf("Attempting to makesite from files in current directory...\n")
+			numSaved, err := saveDir("./")
+			if err != nil {
+				fmt.Printf("Error generating pages: %s\n", err)
+			} else {
+				fmt.Printf("%s%sSuccess!%s Generated %s%d%s page(s) from current directory.\n",
+					Green, Bold, Reset, Bold, numSaved, Reset)
+			}
+		} else {
+			for argNum := range args {
+				arg := args[argNum]
+				fmt.Printf("Attempting to makesite from files in %s directory...\n", arg)
+				directory, err := os.Stat(arg)
+				if err != nil {
+					fmt.Printf("Issue checking if %s is a directory\n", arg)
+					continue
+				}
+				if !directory.Mode().IsDir() {
+					fmt.Printf("%s is not a directory!\n", arg)
+				} else {
+					numSaved, err := saveDir(arg)
+					if err != nil {
+						fmt.Printf("Error generating pages: %s\n", err)
+					} else {
+						fmt.Printf("%s%sSuccess!%s Generated %s%d%s page(s) from %s directory.\n",
+							Green, Bold, Reset, Bold, numSaved, Reset, arg)
+					}
+				}
+			}
+		}
 	},
 }
 

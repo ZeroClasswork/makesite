@@ -36,13 +36,10 @@ type Post struct {
 // fileCmd represents the file command
 var fileCmd = &cobra.Command{
 	Use:   "file",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "makesite file transforms an individual txt file into an html file",
+	Long: `makesite file transforms an individual txt file into an html file
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	The makesite file <filename>.txt command will create a <filename>.html file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		for argNum := range args {
 			arg := args[argNum]

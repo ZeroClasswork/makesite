@@ -39,12 +39,10 @@ var Reset = "\033[0m"
 var dirCmd = &cobra.Command{
 	Use:   "dir",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Long: `makesite dir transforms your txt files into html files within a directory
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	The makesite dir <dirname> command will create these files for each .txt
+		file in the directory`,
 	Run: func(cmd *cobra.Command, args []string) {
 		for argNum := range args {
 			arg := args[argNum]
@@ -90,7 +88,7 @@ func saveDir(dirName string) (numSaved int, err error) {
 		return 0, err
 	}
 	for _, file := range files {
-		if file.Name()[len(file.Name())-4:] == ".txt" {
+		if len(file.Name()) > 4 && file.Name()[len(file.Name())-4:] == ".txt" {
 			save(dirName + file.Name())
 			numSaved += 1
 		}

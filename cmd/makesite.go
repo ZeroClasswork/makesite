@@ -38,13 +38,13 @@ var rootCmd = &cobra.Command{
 	The makesite file <filename>.txt command will create a <filename>.html file
 	The makesite dir <dirname> command will create these files for each .txt
 		file in the directory
-	The makesite command is equivalent to makesite .`,
+	The makesite command is equivalent to makesite dir . -r`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			fmt.Printf("Attempting to makesite from files in current directory...\n")
-			numSaved, err := saveDir("./")
+			numSaved, err := saveDir("./", true)
 			if err != nil {
 				fmt.Printf("Error generating pages: %s\n", err)
 			} else {
@@ -63,7 +63,7 @@ var rootCmd = &cobra.Command{
 				if !directory.Mode().IsDir() {
 					fmt.Printf("%s is not a directory!\n", arg)
 				} else {
-					numSaved, err := saveDir(arg)
+					numSaved, err := saveDir(arg, true)
 					if err != nil {
 						fmt.Printf("Error generating pages: %s\n", err)
 					} else {
@@ -93,7 +93,6 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.

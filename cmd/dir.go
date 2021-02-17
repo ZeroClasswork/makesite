@@ -44,6 +44,7 @@ var dirCmd = &cobra.Command{
 	The makesite dir <dirname> command will create these files for each .txt
 		file in the directory`,
 	Run: func(cmd *cobra.Command, args []string) {
+		r_status, _ := cmd.Flags().GetBool("recursive")
 		for argNum := range args {
 			arg := args[argNum]
 			fmt.Printf("Attempting to makesite from files in %s directory...\n", arg)
@@ -55,7 +56,7 @@ var dirCmd = &cobra.Command{
 			if !directory.Mode().IsDir() {
 				fmt.Printf("%s is not a directory!\n", arg)
 			} else {
-				numSaved, err := saveDir(arg)
+				numSaved, err := saveDir(arg, r_status)
 				if err != nil {
 					fmt.Printf("Error generating pages: %s\n", err)
 				} else {
@@ -78,10 +79,10 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// dirCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().BoolP("recursive", "r", false, "Creates html files from txt files found in current directory's subdirectories")
 }
 
-func saveDir(dirName string) (numSaved int, err error) {
+func saveDir(dirName string, recursive bool) (numSaved int, err error) {
 	numSaved = 0
 	files, err := ioutil.ReadDir(dirName)
 	if err != nil {
@@ -92,7 +93,7 @@ func saveDir(dirName string) (numSaved int, err error) {
 			save(dirName + file.Name())
 			numSaved += 1
 		}
-		if file.IsDir() {
+		if file.IsDir() && recursive {
 			err = filepath.Walk(dirName+file.Name(), func(path string, info os.FileInfo, err error) error {
 				if err == nil && len(info.Name()) > 4 && info.Name()[len(info.Name())-4:] == ".txt" {
 					save(path)

@@ -18,6 +18,7 @@ limitations under the License.
 package cmd
 
 import (
+	"embed"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -32,6 +33,8 @@ type Post struct {
 	Title    string
 	Contents template.HTML
 }
+
+var tmpl embed.FS
 
 // fileCmd represents the file command
 var fileCmd = &cobra.Command{
@@ -68,6 +71,12 @@ func init() {
 }
 
 func save(fileName string) (outputFileName string, err error) {
+	path, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error getting current directory")
+		return "", err
+	}
+
 	postContents, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return "", err
@@ -83,13 +92,16 @@ func save(fileName string) (outputFileName string, err error) {
 		}
 	}
 
-	tmpl := template.Must(template.New("template.tmpl").ParseFiles("template.tmpl"))
-	newFileName := fileName[0:len(fileName)-4] + ".html"
+	t, err := template.ParseFS(tmpl, "template.tmpl")
+	if err != nil {
+		return "", err
+	}
+	newFileName := path + "/" + fileName[0:len(fileName)-4] + ".html"
 	newFile, err := os.Create(newFileName)
 	if err != nil {
 		return "", err
 	}
-	err = tmpl.Execute(newFile, newPost)
+	err = t.Execute(newFile, newPost)
 	if err != nil {
 		return "", err
 	}
